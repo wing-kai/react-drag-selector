@@ -1,0 +1,54 @@
+{
+  "name": "react-drag-selector",
+  "version": "1.0.0",
+  "description": "react框选组件，支持批量框选拖放",
+  "main": "index.js",
+  "browser": {
+    "react": "./node_modules/react/dist/react.min.js",
+    "react-dom": "./node_modules/react-dom/dist/react-dom.min.js",
+    "immutable": "./node_modules/immutable/dist/immutable.min.js"
+  },
+  "browserify-shim": {
+    "react": { "exports": "global:React" },
+    "react-dom": { "exports": "global:ReactDOM" },
+    "immutable": { "exports": "global:Immutable" }
+  },
+  "browserify": {
+    "transform": [ "browserify-shim" ]
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf ./asset; gulp",
+    "bundle": "browserify ./asset/selector -s Selector > ./dist/react-drag-selector.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wing-kai/react-drag-selector.git"
+  },
+  "keywords": [
+    "react",
+    "drag",
+    "selector"
+  ],
+  "author": "wing-kai",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wing-kai/react-drag-selector/issues"
+  },
+  "homepage": "https://github.com/wing-kai/react-drag-selector#readme",
+  "dependencies": {
+    "immutable": "^3.7.6",
+    "react": "^0.14.7",
+    "react-dom": "^0.14.7"
+  },
+  "devDependencies": {
+    "babel-preset-react": "^6.5.0",
+    "browserify": "^13.0.0",
+    "browserify-shim": "^3.8.12",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-notify": "^2.2.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-rename": "^1.2.2"
+  }
+}
