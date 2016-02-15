@@ -1,0 +1,80 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="author" content="wing-kai" />
+    <meta name="description" content="a react drag select component" />
+    <meta name="keywords" content="javascript,react,drag,select" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>React-Drag-Selector</title>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <style>
+    .item {
+        height: 100px;
+        width: 100px;
+        background-color: #FF8E7A;
+        line-height: 100px;
+        text-align: center;
+        color: #fff;
+    }
+
+    .drag-drop-zone {
+        margin: 10px auto;
+    }    
+
+    .select-area {
+        display: flex;
+        flex-wrap: wrap;
+        position: relative;
+        min-height: 100px;
+        cursor: crosshair;
+    }
+
+    .select-area .selection-item {
+        margin: 10px;
+        cursor: move;
+    }
+
+    .selected .item {
+        background: red;
+    }
+
+    .select-area.selecting .item {
+        cursor: crosshair;
+    }
+
+    .select-rectangle {
+        position: absolute;
+        border: solid 1px #BBBBBB;
+        background: rgba(192, 194, 197, 0.47);
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-8 col-xs-offset-2">
+                <h1 class="page-header">React-Drag-Selector</h1>
+                <p>基于React.js制作的框选组件</p>
+                <p>支持 <kbd>Ctrl</kbd> 与 <kbd>Shift</kbd> 连续添加</p>
+                <p>支持多选批量拖动</p>
+                <p>
+                    <iframe src="https://ghbtns.com/github-btn.html?user=wing-kai&amp;repo=react-drag-selector&amp;type=star&amp;count=true"
+                    frameborder="0" scrolling="0" width="170px" height="20px"></iframe>
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-8 col-xs-offset-2">
+                <h1 class="page-header">Demo</h1>
+                <div id="body"></div>
+            </div>
+        </div>
+    </div>
+    <script src="http://cdn.bootcss.com/react/0.14.7/react.min.js"></script>
+    <script src="http://cdn.bootcss.com/react/0.14.7/react-dom.min.js"></script>
+    <script src="http://cdn.bootcss.com/immutable/3.7.6/immutable.min.js"></script>
+    <script src="./react-drag-selector.js"></script>
+    <script src="./script.js"></script>
+</body>
+</html>
