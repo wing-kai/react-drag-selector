@@ -5,6 +5,12 @@ react框选组件，支持批量框选拖放
 
 [View Demo](http://wing-kai.github.io/react-drag-selector/)
 
+# npm
+
+```bash
+npm install react-drag-selector
+```
+
 # Usage
 
 ```jsx
