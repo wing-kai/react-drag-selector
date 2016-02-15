@@ -5,13 +5,13 @@ const browserify = require('browserify');
 const babel = require('gulp-babel');
 const plumber = require('gulp-plumber');
 const notify = require('gulp-notify');
-const rename = require('gulp-rename'); //重命名
+const rename = require('gulp-rename');
 
 const onError = function (err) {
     notify.onError({
         title: "Error",
-        // message: err.message.replace(/.+\/(.+\.(jsx|js).+)/g, '$1'),
-        message: err.message,
+        message: err.message.replace(/.+\/(.+\.(jsx|js).+)/g, '$1'),
+        // message: err.message,
         sound: "Beep"
     })(err);
 };
@@ -21,27 +21,16 @@ gulp.task('script', function () {
         errorHandler: onError
     })).pipe(babel({
         compact: false,
-        "presets": ["react"]
+        "presets": ["es2015", "react"]
     })).pipe(plumber({
         errorHandler: onError
     })).pipe(rename({
         extname: '.js'
     })).pipe(gulp.dest('asset'));
-
-    gulp.src(['./demo/*.jsx', './demo/*.js']).pipe(plumber({
-        errorHandler: onError
-    })).pipe(babel({
-        compact: false,
-        "presets": ["react"]
-    })).pipe(plumber({
-        errorHandler: onError
-    })).pipe(rename({
-        extname: '.js'
-    })).pipe(gulp.dest('./demo'));
 });
 
 gulp.task('watch', function () {
-    gulp.watch(['./lib/**/*.js', './lib/**/*.jsx', './demo/*.jsx', './demo/*.js'], ['script']);
+    gulp.watch(['./lib/**/*.js', './lib/**/*.jsx'], ['script']);
 });
 
 gulp.task('default', ['script', 'watch']);

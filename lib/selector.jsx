@@ -6,6 +6,27 @@ const ReactDOM = require('react-dom');
 const Shortcut = require('./shortcut');
 const KeyCodeMap = require('./shortcut/key_code_map');
 
+const selectRectangleWrap = document.createElement('div');
+
+const SelectRectangle = React.createClass({
+    getDefaultProps() {
+        return {
+            style: {
+                top: 0,
+                left: 0,
+                width: 0,
+                height: 0
+            }
+        }
+    },
+
+    render() {
+        return (
+            <div className="select-rectangle" style={this.props.style} />
+        )
+    }
+});
+
 const Selection = React.createClass({
 
     getDefaultProps() {
@@ -24,15 +45,25 @@ const Selection = React.createClass({
             startPoint: null,
             endPoint: null,
 
+            startScreenPoint: null,
+            endScreenPoint: null,
+
             appendMode: false
         }
     },
 
+    componentWillUpdate() {
+        this.handleRenderSelectRectangle();
+    },
+
     componentWillMount() {
 
-        let that = this;
+        const that = this;
+
         this.originSelectedItems = new Set();
         this.selectedItems = new Set();
+
+        document.body.appendChild(selectRectangleWrap);
 
         Shortcut.addListener([KeyCodeMap.ctrl], this.handleSwitchAppendMode.bind(this, true));
         Shortcut.addListener([KeyCodeMap.shift], this.handleSwitchAppendMode.bind(this, true));
@@ -55,7 +86,6 @@ const Selection = React.createClass({
         return (
             <div ref="selectionArea" key="selectionArea" className={className} onMouseDown={this.handleMouseDown}>
                 {this.handleRenderChildren()}
-                {this.handleRenderSelectRectangle()}
             </div>
         )
     },
@@ -72,6 +102,8 @@ const Selection = React.createClass({
         Shortcut.removeListener([KeyCodeMap.shift]);
         Shortcut.removeListener([KeyCodeMap.ctrl, KeyCodeMap.a]);
         window.removeEventListener('keyup', this.handleSwitchAppendMode);
+        ReactDOM.unmountComponentAtNode(selectRectangleWrap);
+        document.body.removeChild(selectRectangleWrap);
     },
 
     handleSwitchAppendMode(appendMode) {
@@ -86,27 +118,32 @@ const Selection = React.createClass({
 
         const thisState = this.state;
         const thisRefs = this.refs;
+
         const startPoint = {
             x: event.pageX,
             y: event.pageY
         };
+        const startScreenPoint = {
+            x: event.clientX,
+            y: event.clientY
+        }
 
         let downInSelectionItem = false;
 
         for (let key in thisRefs) {
             if (key !== "selectionArea") {
-                let selectionItem = thisRefs[key];
-                let selectionItemRectAngle = {
-                    left: selectionItem.getBoundingClientRect().left,
-                    top: selectionItem.getBoundingClientRect().top,
-                    width: selectionItem.getBoundingClientRect().width,
-                    height: selectionItem.getBoundingClientRect().height,
+                const BCR = thisRefs[key].getBoundingClientRect();
+                const selectionItemRectAngle = {
+                    left: BCR.left,
+                    top: BCR.top,
+                    width: BCR.width,
+                    height: BCR.height,
                 };
 
                 if (
                     this.handleCalcBoxIntercets({
-                            top: startPoint.y,
-                            left: startPoint.x,
+                            top: startScreenPoint.y,
+                            left: startScreenPoint.x,
                             width: 0,
                             height: 0
                         },
@@ -128,19 +165,19 @@ const Selection = React.createClass({
             mouseDown: true,
             downInSelectionItem,
             startPoint,
+            startScreenPoint
         });
 
         window.addEventListener('mouseup', this.handleMouseUp);
         window.addEventListener('mousemove', this.handleMouseMove);
-        window.removeEventListener('mousedown', this.handleMouseDownOutSide);
     },
 
     handleCalcBoxIntercets(boxA, boxB) {
         if (
-            boxA.left <= boxB.left + boxB.width
-            && boxA.left + boxA.width >= boxB.left
-            && boxA.top <= boxB.top + boxB.height
-            && boxA.top + boxA.height >= boxB.top
+            boxA.left <= boxB.left + boxB.width &&
+            boxA.left + boxA.width >= boxB.left &&
+            boxA.top <= boxB.top + boxB.height &&
+            boxA.top + boxA.height >= boxB.top
         ) {
             return true;
         }
@@ -150,22 +187,32 @@ const Selection = React.createClass({
 
     handleMouseMove(event) {
 
-        const that = this;
         const thisState = this.state;
         const thisRefs = this.refs;
 
         const parentNode = this.refs.selectionArea;
-        const startPoint = thisState.startPoint;
+        const {startPoint, startScreenPoint} = thisState;
+
         const endPoint = {
             x: event.pageX,
             y: event.pageY
         };
+        const endScreenPoint = {
+            x: event.clientX,
+            y: event.clientY
+        };
 
         const selectBoxStyle = {
-            left: Math.min(startPoint.x, endPoint.x) - parentNode.offsetLeft - Math.abs(parentNode.offsetLeft - parentNode.getBoundingClientRect().left),
-            top: Math.min(startPoint.y, endPoint.y) - parentNode.offsetTop,
+            left: Math.min(startPoint.x, endPoint.x),
+            top: Math.min(startPoint.y, endPoint.y),
             width: Math.abs(startPoint.x - endPoint.x),
             height: Math.abs(startPoint.y - endPoint.y),
+        }
+        const selectRectangleInScreen = {
+            left: Math.min(startScreenPoint.x, endScreenPoint.x),
+            top: Math.min(startScreenPoint.y, endScreenPoint.y),
+            width: Math.abs(startScreenPoint.x - endScreenPoint.x),
+            height: Math.abs(startScreenPoint.y - endScreenPoint.y),
         }
 
         if (!thisState.mouseDown || thisState.downInSelectionItem)
@@ -173,15 +220,16 @@ const Selection = React.createClass({
 
         for (let key in thisRefs) {
             if (key !== "selectionArea") {
-                let selectionItem = thisRefs[key];
-                let selectionItemRectAngle = {
-                    left: selectionItem.offsetLeft,
-                    top: selectionItem.offsetTop,
-                    width: selectionItem.clientWidth,
-                    height: selectionItem.clientHeight,
+
+                const BCR = thisRefs[key].getBoundingClientRect();
+                const selectionItemRectAngle = {
+                    left: BCR.left,
+                    top: BCR.top,
+                    width: BCR.width,
+                    height: BCR.height,
                 };
 
-                if (this.handleCalcBoxIntercets(selectBoxStyle, selectionItemRectAngle)) {
+                if (this.handleCalcBoxIntercets(selectRectangleInScreen, selectionItemRectAngle)) {
                     this.selectedItems.add(key);
                 } else if (!thisState.appendMode) {
                     this.selectedItems.delete(key);
@@ -191,10 +239,8 @@ const Selection = React.createClass({
 
         this.setState({
             selecting: true,
-            endPoint: {
-                x: event.pageX,
-                y: event.pageY
-            },
+            endPoint,
+            endScreenPoint,
             selectBoxStyle
         });
     },
@@ -202,13 +248,24 @@ const Selection = React.createClass({
     handleRenderSelectRectangle() {
 
         const thisState = this.state;
+        const { startPoint, endPoint } = thisState;
 
-        if (!thisState.selecting)
+        if (!thisState.selecting || !thisState.mouseDown || thisState.downInSelectionItem) {
+            ReactDOM.unmountComponentAtNode(selectRectangleWrap);
             return null;
+        }
 
-        return (
-            <div className="select-rectangle" style={thisState.selectBoxStyle} />
-        )
+        const selectRectangleStyle = {
+            left: Math.min(startPoint.x, endPoint.x),
+            top: Math.min(startPoint.y, endPoint.y),
+            width: Math.abs(startPoint.x - endPoint.x),
+            height: Math.abs(startPoint.y - endPoint.y),
+        }
+
+        ReactDOM.render(
+            <SelectRectangle style={selectRectangleStyle} />,
+            selectRectangleWrap
+        );
     },
 
     handleRenderChildren() {
@@ -248,17 +305,14 @@ const Selection = React.createClass({
             this.props.onSelectionChange(selectionItemStatus);
         }
 
-
         return newChildren;
     },
 
     handleDragStart(event) {
-        if (this.selectedItems.size) {
-            event.dataTransfer.setData("dragKeyList", Array.from(this.selectedItems));
-        }
-        else {
-            event.dataTransfer.setData("dragKeyList", [this.downInSelectionItem]);
-        }
+        event.dataTransfer.setData(
+            "dragKeyList",
+            this.selectedItems.size ? Array.from(this.selectedItems) : [this.downInSelectionItem]
+        );
     },
 
     handleMouseUp() {
@@ -270,9 +324,11 @@ const Selection = React.createClass({
             mouseDown: false,
             selecting: false,
             startPoint: null,
-            endPoint: null
+            endPoint: null,
+            downInSelectionItem: false
         });
 
+        ReactDOM.unmountComponentAtNode(selectRectangleWrap);
         window.removeEventListener('mouseup', this.handleMouseUp);
         window.removeEventListener('mousemove', this.handleMouseMove);
     },
