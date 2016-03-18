@@ -5,21 +5,26 @@
   "main": "index.js",
   "browser": {
     "react": "./node_modules/react/dist/react.min.js",
-    "react-dom": "./node_modules/react-dom/dist/react-dom.min.js",
-    "immutable": "./node_modules/immutable/dist/immutable.min.js"
+    "react-dom": "./node_modules/react-dom/dist/react-dom.min.js"
   },
   "browserify-shim": {
-    "react": { "exports": "global:React" },
-    "react-dom": { "exports": "global:ReactDOM" },
-    "immutable": { "exports": "global:Immutable" }
+    "react": {
+      "exports": "global:React"
+    },
+    "react-dom": {
+      "exports": "global:ReactDOM"
+    }
   },
   "browserify": {
-    "transform": [ "browserify-shim" ]
+    "transform": [
+      "browserify-shim"
+    ]
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -rf ./asset; gulp",
-    "bundle": "browserify ./asset/selector -s Selector > ./dist/react-drag-selector.js"
+    "bundle": "browserify ./asset/selector -s Selector > ./dist/react-drag-selector.js",
+    "pack": "gulp bundle"
   },
   "repository": {
     "type": "git",
@@ -37,7 +42,6 @@
   },
   "homepage": "https://github.com/wing-kai/react-drag-selector#readme",
   "dependencies": {
-    "immutable": "^3.7.6",
     "react": "^0.14.7",
     "react-dom": "^0.14.7"
   },
@@ -50,6 +54,9 @@
     "gulp-babel": "^6.1.2",
     "gulp-notify": "^2.2.0",
     "gulp-plumber": "^1.1.0",
-    "gulp-rename": "^1.2.2"
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.5.3",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
   }
 }

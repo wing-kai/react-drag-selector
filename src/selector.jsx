@@ -8,24 +8,9 @@ const KeyCodeMap = require('./shortcut/key_code_map');
 
 const selectRectangleWrap = document.createElement('div');
 
-const SelectRectangle = React.createClass({
-    getDefaultProps() {
-        return {
-            style: {
-                top: 0,
-                left: 0,
-                width: 0,
-                height: 0
-            }
-        }
-    },
-
-    render() {
-        return (
-            <div className="select-rectangle" style={this.props.style} />
-        )
-    }
-});
+const SelectRectangle = props => (
+    <div className="select-rectangle" style={props.style} />
+)
 
 const Selection = React.createClass({
 

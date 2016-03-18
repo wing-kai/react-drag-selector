@@ -106,4 +106,4 @@ module.exports = {
     backSlash: 220,
     closeBraket: 221,
     singleQuote: 222
-};
+}

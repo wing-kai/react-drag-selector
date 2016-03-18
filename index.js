@@ -1,1 +1,1 @@
-module.exports = require('./lib/selector');
+module.exports = require('./src/selector.jsx');
