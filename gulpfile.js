@@ -11,7 +11,7 @@ const browserify = require('browserify');
 const source     = require('vinyl-source-stream');
 const buffer     = require('vinyl-buffer');
 
-const onError = function (err) {
+const onError = err => {
     notify.onError({
         title: "Error",
         message: err.message.replace(/.+\/(.+\.(jsx|js).+)/g, '$1'),
@@ -55,10 +55,10 @@ gulp.task('script', () => (
     })).pipe(gulp.dest('lib'))
 ));
 
-gulp.task('watch', function () {
+gulp.task('watch', () => {
     gulp.watch(['./src/**/*.js', './src/**/*.jsx'], ['script']);
 });
 
 gulp.task('deploy:min', ['script', 'bundle', 'uglify']);
-gulp.task('deploy', ['script', 'bundle']);
-gulp.task('default', ['script', 'watch']);
+gulp.task('deploy',     ['script', 'bundle']);
+gulp.task('default',    ['script', 'watch']);
