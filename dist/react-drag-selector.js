@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Selector = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global){
 "use strict";
 
@@ -16,8 +16,8 @@ var SelectRectangle = function SelectRectangle(props) {
     return React.createElement('div', { className: 'select-rectangle', style: props.style });
 };
 
-var Selection = React.createClass({
-    displayName: 'Selection',
+var Selector = React.createClass({
+    displayName: 'Selector',
     getDefaultProps: function getDefaultProps() {
         return {
             enable: true,
@@ -51,8 +51,8 @@ var Selection = React.createClass({
 
         document.body.appendChild(selectRectangleWrap);
 
-        Shortcut.addListener([KeyCodeMap.ctrl], this.handleSwitchAppendMode.bind(this, true));
-        Shortcut.addListener([KeyCodeMap.shift], this.handleSwitchAppendMode.bind(this, true));
+        // Shortcut.addListener([KeyCodeMap.ctrl], this.handleSwitchAppendMode.bind(this, true));
+        // Shortcut.addListener([KeyCodeMap.shift], this.handleSwitchAppendMode.bind(this, true));
         // 全选监听
         // Shortcut.addListener([KeyCodeMap.ctrl, KeyCodeMap.a], () => {
         //     for (let key in that.refs) {
@@ -80,9 +80,9 @@ var Selection = React.createClass({
         this.forceUpdate();
     },
     componentWillUmmount: function componentWillUmmount() {
-        Shortcut.removeListener([KeyCodeMap.ctrl]);
-        Shortcut.removeListener([KeyCodeMap.shift]);
-        Shortcut.removeListener([KeyCodeMap.ctrl, KeyCodeMap.a]);
+        // Shortcut.removeListener([KeyCodeMap.ctrl]);
+        // Shortcut.removeListener([KeyCodeMap.shift]);
+        // Shortcut.removeListener([KeyCodeMap.ctrl, KeyCodeMap.a]);
         window.removeEventListener('keyup', this.handleSwitchAppendMode);
         ReactDOM.unmountComponentAtNode(selectRectangleWrap);
         document.body.removeChild(selectRectangleWrap);
@@ -294,7 +294,7 @@ var Selection = React.createClass({
     }
 });
 
-module.exports = Selection;
+module.exports = Selector;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./shortcut":2,"./shortcut/key_code_map":3}],2:[function(require,module,exports){
 "use strict";
@@ -325,15 +325,13 @@ var addListener = function addListener(kg, handler) {
  **/
 var removeListener = function removeListener(kg, deleteHandler) {
     var keyGroup = getKeyGroupString(kg);
-    if (listenList.has(keyGroup)) {
+    if (keyGroup in listenList) {
         if (deleteHandler) {
-            listenList = listenList.update(keyGroup, function (handlerList) {
-                return handlerList.filter(function (handler) {
-                    return handler !== deleteHandler;
-                });
+            listenList[keyGroup] = listenList[keyGroup].filter(function (handler) {
+                return handler !== deleteHandler;
             });
         } else {
-            listenList = listenList.delete(keyGroup);
+            delete listenList[keyGroup];
         }
     }
 };
@@ -341,8 +339,8 @@ var removeListener = function removeListener(kg, deleteHandler) {
 window.addEventListener('keydown', function (event) {
     keyDownGroup = Array.from(new Set([].concat(keyDownGroup, [event.keyCode])));
     var keyDownGroupString = getKeyGroupString(keyDownGroup);
-    if (listenList.has(keyDownGroupString)) {
-        listenList.get(keyDownGroupString).forEach(function (handler) {
+    if (keyDownGroupString in listenList) {
+        listenList[keyDownGroupString].forEach(function (handler) {
             handler();
         });
     }
@@ -466,4 +464,5 @@ module.exports = {
     closeBraket: 221,
     singleQuote: 222
 };
-},{}]},{},[1]);
+},{}]},{},[1])(1)
+});

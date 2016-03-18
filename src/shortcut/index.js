@@ -26,14 +26,11 @@ const addListener = (kg, handler) => {
  **/
 const removeListener = (kg, deleteHandler) => {
     let keyGroup = getKeyGroupString(kg);
-    if (listenList.has(keyGroup)) {
+    if (keyGroup in listenList) {
         if (deleteHandler) {
-            listenList = listenList.update(
-                keyGroup,
-                handlerList => handlerList.filter(handler => handler !== deleteHandler)
-            );
+            listenList[keyGroup] = listenList[keyGroup].filter(handler => handler !== deleteHandler)
         } else {
-            listenList = listenList.delete(keyGroup);
+            delete listenList[keyGroup]
         }
     }
 }
@@ -41,8 +38,8 @@ const removeListener = (kg, deleteHandler) => {
 window.addEventListener('keydown', event => {
     keyDownGroup = Array.from(new Set([...keyDownGroup, event.keyCode]))
     let keyDownGroupString = getKeyGroupString(keyDownGroup);
-    if (listenList.has(keyDownGroupString)) {
-        listenList.get(keyDownGroupString).forEach(
+    if (keyDownGroupString in listenList) {
+        listenList[keyDownGroupString].forEach(
             handler => { handler() }
         );
     }

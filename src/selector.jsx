@@ -12,7 +12,7 @@ const SelectRectangle = props => (
     <div className="select-rectangle" style={props.style} />
 )
 
-const Selection = React.createClass({
+const Selector = React.createClass({
 
     getDefaultProps() {
         return {
@@ -319,4 +319,4 @@ const Selection = React.createClass({
     },
 });
 
-module.exports = Selection;
+module.exports = Selector;

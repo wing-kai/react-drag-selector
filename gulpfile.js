@@ -21,7 +21,13 @@ const onError = err => {
 };
 
 gulp.task('uglify', ['bundle'], () => {
-    gulp.src('./dist/react-drag-selector.js').pipe(uglify()).pipe(rename({
+    gulp.src('./dist/react-drag-selector.js').pipe(uglify({
+        compress: {
+            global_defs: {
+                Selector: false
+            }
+        }
+    })).pipe(rename({
         suffix: '.min'
     })).pipe(gulp.dest('dist'));
 });
@@ -29,6 +35,7 @@ gulp.task('uglify', ['bundle'], () => {
 gulp.task('bundle', ['script'], () => {
     const bundle = browserify({
         entries: './lib/selector',
+        standalone: 'Selector',
         shim: {
             "react": {
                 "exports": "global:React"
@@ -55,10 +62,23 @@ gulp.task('script', () => (
     })).pipe(gulp.dest('lib'))
 ));
 
+gulp.task('demoScript', () => (
+    gulp.src(['./demo/*.jsx']).pipe(plumber({
+        errorHandler: onError
+    })).pipe(babel({
+        compact: false,
+        presets: ["es2015", "react"]
+    })).pipe(plumber({
+        errorHandler: onError
+    })).pipe(rename({
+        extname: '.js'
+    })).pipe(gulp.dest('demo'))
+));
+
 gulp.task('watch', () => {
-    gulp.watch(['./src/**/*.js', './src/**/*.jsx'], ['script']);
+    gulp.watch(['./src/**/*.js', './src/**/*.jsx'], ['script', 'bundle']);
+    gulp.watch(['./demo/*.jsx'], ['demoScript'])
 });
 
-gulp.task('deploy:min', ['script', 'bundle', 'uglify']);
-gulp.task('deploy',     ['script', 'bundle']);
-gulp.task('default',    ['script', 'watch']);
+gulp.task('deploy', ['script', 'bundle', 'uglify']);
+gulp.task('default', ['script', 'demoScript', 'watch']);

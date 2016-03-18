@@ -22,9 +22,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -rf ./asset; gulp",
-    "bundle": "browserify ./asset/selector -s Selector > ./dist/react-drag-selector.js",
-    "pack": "gulp bundle"
+    "dev": "gulp",
+    "deploy": "gulp deploy"
   },
   "repository": {
     "type": "git",
